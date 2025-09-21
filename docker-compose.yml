@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  namaste-icd-service:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=sqlite:///./namaste.db
+      - DEBUG=true
+      - LOG_LEVEL=INFO
+    volumes:
+      - ./data:/app/data
+      - namaste_data:/app
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+
+  # Optional: Add PostgreSQL for production
+  # postgres:
+  #   image: postgres:15
+  #   environment:
+  #     POSTGRES_DB: namaste
+  #     POSTGRES_USER: namaste
+  #     POSTGRES_PASSWORD: namaste_password
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   ports:
+  #     - "5432:5432"
+  #   restart: unless-stopped
+
+volumes:
+  namaste_data:
+  # postgres_data:
